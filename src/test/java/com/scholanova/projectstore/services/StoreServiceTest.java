@@ -59,5 +59,86 @@ class StoreServiceTest {
         // THEN
         verify(storeRepository, atLeastOnce()).create(correctStore);
         assertThat(returnedStore).isEqualTo(savedStore);
+        System.out.println(returnedStore);
     }
+
+    @Test
+    void shouldFindAGivenStore() throws Exception {
+        // GIVEN
+       /* Integer id = 2;
+        StoreGateway storeGateway = new StoreGateway();
+
+        //when
+        Store storeResult = storeGateway.getStoreById(id);
+
+        // THEN
+
+        //assertThat(storeResult).isNotNull();
+        assertThat(storeResult).extracting(Store::getId,Store::getName)
+        .contains(2,"test");*/
+
+
+
+        Integer ids = 2;
+        String name = "test";
+
+        Store correctStore = new Store(null, name);
+        Store savedStore = new Store(ids, name);
+        when(storeRepository.getById(ids)).thenReturn(savedStore);
+
+        // WHEN
+        Store returnedStore = storeService.getStoreById(ids);
+
+        // THEN
+        verify(storeRepository, atLeastOnce()).getById(ids);
+        assertThat(returnedStore).isEqualTo(savedStore);
+        System.out.println(returnedStore);
+
+    }
+
+    @Test
+    void shoulDeleteAGivenStore() throws Exception {
+
+        Integer ids = 2;
+        String name = "test";
+
+        Store correctStore = new Store(2, name);
+        Store savedStore = new Store(null, null);
+        when(storeRepository.delete(correctStore)).thenReturn(savedStore);
+
+        // WHEN
+        Store returnedStore = storeService.delete(correctStore);
+
+        // THEN
+        verify(storeRepository, atLeastOnce()).delete(correctStore);
+        assertThat(returnedStore).isEqualTo(savedStore);
+        System.out.println(returnedStore);
+
+    }
+
+
+    @Test
+    void shoulUpdateAGivenStore() throws Exception {
+
+        Integer ids = 2;
+        String name = "testupdate";
+
+        Store correctStore = new Store(2, name);
+        Store savedStore = new Store(2, name);
+        when(storeRepository.update(correctStore)).thenReturn(savedStore);
+
+        // WHEN
+        Store returnedStore = storeService.update(correctStore);
+
+        // THEN
+        verify(storeRepository, atLeastOnce()).update(correctStore);
+        assertThat(returnedStore).isEqualTo(savedStore);
+        System.out.println(returnedStore);
+
+    }
+
+
+
+
+
 }

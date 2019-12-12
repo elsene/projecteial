@@ -7,12 +7,16 @@ import com.scholanova.projectstore.repositories.StoreRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StoreService {
+public class StoreService implements StoreInterface{
 
     private StoreRepository storeRepository;
+    private StoreInterface storeInterface;
 
     public StoreService(StoreRepository storeRepository) {
         this.storeRepository = storeRepository;
+    }
+    public StoreService(StoreInterface storeInterface){
+        this.storeInterface = storeInterface;
     }
 
     public Store create(Store store) throws StoreNameCannotBeEmptyException {

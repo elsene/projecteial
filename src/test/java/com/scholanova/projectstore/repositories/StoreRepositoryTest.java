@@ -10,8 +10,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringJUnitConfig(StoreRepository.class)
@@ -56,6 +58,13 @@ class StoreRepositoryTest {
             // Then
             assertThat(extractedStore).isEqualToComparingFieldByField(store);
         }
+        private void insertStore(Store store) {
+            String query = "INSERT INTO STORES " +
+                    "(ID, NAME) " +
+                    "VALUES ('%d', '%s')";
+            jdbcTemplate.execute(
+                    String.format(query, store.getId(), store.getName()));
+        }
     }
 
     @Nested
@@ -74,13 +83,65 @@ class StoreRepositoryTest {
             assertThat(createdStore.getId()).isNotNull();
             assertThat(createdStore.getName()).isEqualTo(storeName);
         }
+
+
+        @Test
+        void ShouldFindStore_thenStoreIsInDatabaseWithId() throws ModelNotFoundException {
+            // Given
+            String storeName = "test";
+            Integer stroreId = 2;
+            Store storeToSelect = new Store(null, storeName);
+
+            Store storeSaved = storeRepository.create(storeToSelect);
+
+
+            // When
+            Store FindStore = storeRepository.getById(1);
+
+            // Then
+            assertThat(FindStore.getId()).isNotNull();
+            assertThat(FindStore.getName()).isEqualTo(storeName);
+        }
+
     }
 
-    private void insertStore(Store store) {
-        String query = "INSERT INTO STORES " +
-                "(ID, NAME) " +
-                "VALUES ('%d', '%s')";
-        jdbcTemplate.execute(
-                String.format(query, store.getId(), store.getName()));
+
+    @Transactional
+    @Test
+    void ShouldDeleteStore_thenStoreIsInDatabaseWithId() {
+        // Given
+        String storeName = "test";
+        Integer stroreId = 2;
+        Store storeToCreate = new Store(null, storeName);
+
+        Store storeSaved = storeRepository.create(storeToCreate);
+        assertThat(storeSaved).extracting(Store::getId,Store::getName)
+                .contains(1,"test");
+
+        // When
+        Store DeleteStore = storeRepository.delete(storeSaved);
+
+        //then
+        assertThat(DeleteStore).isNull();
+
+
+    }
+
+    @Test
+    void ShouldUpdateStore_thenStoreIsInDatabaseWithId() throws ModelNotFoundException {
+        // Given
+        String storeName = "test";
+        Integer stroreId = 2;
+        Store storeToUpdate = new Store(null, storeName);
+
+        Store storeSaved = storeRepository.create(storeToUpdate);
+
+
+        // When
+        Store UpdateStore = storeRepository.update(storeSaved);
+
+        // Then
+        assertThat(UpdateStore.getId()).isNotNull();
+        assertThat(UpdateStore.getName()).isEqualTo(storeName);
     }
 }

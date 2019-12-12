@@ -69,9 +69,9 @@ public class StoreRepository {
 
         jdbcTemplate.update(query, parameters, holder);
 
-        Integer storeToDeleteId = (Integer) holder.getKeys().get("ID");
+       // Integer storeToDeleteId = (Integer) holder.getKeys().get("ID");
         try {
-            return this.getById(storeToDeleteId);
+            return this.getById(storeToDelete.getId());
         } catch (ModelNotFoundException e) {
             return null;
         }
